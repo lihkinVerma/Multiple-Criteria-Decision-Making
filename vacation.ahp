@@ -1,0 +1,72 @@
+Version: 2.0
+Alternatives: &alternatives
+  Beach:
+    cost: 10000
+  Mountains:
+    cost: 5000
+Goal:
+  name: Vacation
+  decision-makers:
+    #optional node, needed only if not all decision-makers have equal voting power
+    - Dad: 0.4
+    - Mom: 2/5
+    - Kid: 0.2
+  preferences:
+    Dad:
+      pairwise:
+      - [Costs, Fun, 4]
+      - [Costs, Spa, 9]
+      - [Fun, Spa, 4]
+    Mom:
+      pairwise:
+      - [Costs, Fun, 1/4]
+      - [Costs, Spa, 1/9]
+      - [Fun, Spa, 1/5]
+    Kid:
+      pairwise:
+      - [Costs, Fun, 1/9]
+      - [Costs, Spa, 1]
+      - [Fun, Spa, 9]
+  children:
+    Costs:
+      preferences:
+        Dad:
+          pairwiseFunction: 
+            function(a1, a2) min(9, max(1/9, a2$cost/a1$cost))
+        Mom:
+          scoreFunction:
+            function(a) 1/a$cost
+        Kid:
+          priority:
+            - Beach: 1/2
+            - Mountains: 0.5
+      children: *alternatives
+    Fun:
+      preferences:
+        Dad:
+          pairwise:
+            - [Beach, Mountains, 1/6]
+        Mom:
+          pairwise:
+            - [Beach, Mountains, 2]
+        Kid:
+        # Often, entering pairwise preferences is lengthy, especially if you
+        # have multiple alternatives. Instead, you can enter scores, i.e. rate
+        # each alternative on a scale. The scale can be chosen freely. The 
+        # priorities are derived as score / sum(scores)
+          score:
+            - Beach: 5
+            - Mountains: 0
+      children: *alternatives
+    Spa:
+      preferences:
+        Dad:
+          pairwise:
+            - [Beach, Mountains, 2]
+        Mom:
+          pairwise:
+            - [Beach, Mountains, 6]
+        Kid:
+          pairwise:
+            - [Beach, Mountains, 1/2]
+      children: *alternatives
